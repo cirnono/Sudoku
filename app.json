@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "数独",
+    "slug": "sudoku",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.personal.sudoku"
+    },
+    "android": {
+      "package": "com.personal.sudoku"
+    }
+  }
+}
