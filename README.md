@@ -15,7 +15,8 @@
 - 撤销、擦除、暂停、新局和重玩
 - 自动保存当前进度
 - 当前局内的手动存档与读档，方便尝试不同解法
-- 持久保存难度、配色和快速模式设置
+- 中英文界面切换，并持久保存语言、难度、配色和快速模式设置
+- 仅在屏幕底部展示、不遮挡游戏区域的自适应 AdMob 横幅
 
 ## 技术栈
 
@@ -29,14 +30,14 @@
 
 ## 开始使用
 
-需要先安装 [Node.js](https://nodejs.org/) 和 [pnpm](https://pnpm.io/)。在手机上测试时，请安装支持 Expo SDK 54 的最新版 Expo Go。
+需要先安装 [Node.js](https://nodejs.org/) 和 [pnpm](https://pnpm.io/)。由于 AdMob 使用原生模块，项目需要使用 Expo Development Build，不能在 Expo Go 中运行。
 
 ```bash
 pnpm install
-pnpm start
+pnpm exec expo run:android
 ```
 
-启动后使用 Expo Go 扫描终端中的二维码。也可以运行：
+首次原生构建完成后，可以运行 `pnpm start` 继续连接 Development Build。
 
 ```bash
 pnpm android
@@ -45,6 +46,19 @@ pnpm web
 ```
 
 > iOS 模拟器需要 macOS；Android 模拟器需要提前配置 Android Studio。
+
+## AdMob 配置
+
+开发环境默认使用 Google 测试广告。复制 `.env.example` 为 `.env`，填入自己的 AdMob App ID 和底部横幅 Ad Unit ID 后再进行正式构建。不要在开发测试时点击正式广告。
+
+## EAS 云构建
+
+```bash
+pnpm dlx eas-cli@latest login
+pnpm dlx eas-cli@latest build --platform android --profile development
+```
+
+Development Profile 会生成可直接安装的 APK。Production Profile 会生成用于 Google Play 的 AAB。
 
 ## 操作说明
 

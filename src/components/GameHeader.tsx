@@ -9,13 +9,14 @@ import { formatTime } from '../logic/sudoku';
 import type { Difficulty, PaletteId } from '../types';
 import { HIGHLIGHT_PALETTES } from '../theme/palettes';
 
-const DIFFICULTY_LABELS: Record<Difficulty, string> = {
-  easy: '简单',
-  medium: '中等',
-  hard: '困难',
-  expert: '专家',
-  master: '大师',
-  extreme: '极限',
+const DIFFICULTY_LABELS: Record<'zh' | 'en', Record<Difficulty, string>> = {
+  zh: { easy: '简单', medium: '中等', hard: '困难', expert: '专家', master: '大师', extreme: '极限' },
+  en: { easy: 'Easy', medium: 'Medium', hard: 'Hard', expert: 'Expert', master: 'Master', extreme: 'Extreme' },
+};
+
+const PALETTE_NAMES: Record<'zh' | 'en', Record<PaletteId, string>> = {
+  zh: { ocean: '海洋蓝', forest: '森林绿', sunset: '日落橙', lavender: '薰衣紫', rose: '樱花粉' },
+  en: { ocean: 'Ocean Blue', forest: 'Forest Green', sunset: 'Sunset Orange', lavender: 'Lavender', rose: 'Sakura Pink' },
 };
 
 export const GameHeader: React.FC = () => {
@@ -31,6 +32,9 @@ export const GameHeader: React.FC = () => {
   const paletteId = useGameStore(s => s.paletteId);
   const selectPalette = useGameStore(s => s.selectPalette);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const language = useGameStore(s => s.language);
+  const toggleLanguage = useGameStore(s => s.toggleLanguage);
+  const difficultyLabels = DIFFICULTY_LABELS[language];
 
   const handleDifficulty = (nextDifficulty: Difficulty) => {
     setDifficultyOpen(false);
@@ -47,18 +51,21 @@ export const GameHeader: React.FC = () => {
           style={styles.difficultyBadge}
           onPress={() => setDifficultyOpen(true)}
         >
-          <Text style={styles.difficultyText}>{DIFFICULTY_LABELS[difficulty]} ▾</Text>
+          <Text style={styles.difficultyText}>{difficultyLabels[difficulty]} ▾</Text>
         </TouchableOpacity>
         <View style={styles.headerActions}>
+        <TouchableOpacity style={styles.headerActionBtn} onPress={toggleLanguage}>
+          <Text style={styles.headerActionText}>{language === 'zh' ? 'EN' : '中文'}</Text>
+        </TouchableOpacity>
         <TouchableOpacity
           style={[styles.headerActionBtn, styles.paletteBtn]}
           onPress={() => setPaletteOpen(true)}
         >
-          <Text style={styles.headerActionText}>配色</Text>
+          <Text style={styles.headerActionText}>{language === 'zh' ? '配色' : 'Color'}</Text>
         </TouchableOpacity>
         {status === 'paused' ? (
           <TouchableOpacity style={styles.resumeBtn} onPress={resumeGame}>
-            <Text style={styles.resumeBtnText}>继续</Text>
+            <Text style={styles.resumeBtnText}>{language === 'zh' ? '继续' : 'Resume'}</Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
@@ -67,30 +74,30 @@ export const GameHeader: React.FC = () => {
             disabled={status !== 'playing'}
           >
             <Text style={[styles.headerActionText, status !== 'playing' && styles.disabledText]}>
-              暂停
+              {language === 'zh' ? '暂停' : 'Pause'}
             </Text>
           </TouchableOpacity>
         )}
         <TouchableOpacity style={styles.headerActionBtn} onPress={newGame}>
-          <Text style={styles.headerActionText}>新局</Text>
+          <Text style={styles.headerActionText}>{language === 'zh' ? '新局' : 'New'}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.headerActionBtn} onPress={restartGame}>
-          <Text style={styles.headerActionText}>重玩</Text>
+          <Text style={styles.headerActionText}>{language === 'zh' ? '重玩' : 'Replay'}</Text>
         </TouchableOpacity>
         </View>
       </View>
       <Modal transparent visible={difficultyOpen} animationType="fade">
         <Pressable style={styles.modalBackdrop} onPress={() => setDifficultyOpen(false)}>
           <Pressable style={styles.difficultyMenu}>
-            <Text style={styles.menuTitle}>选择难度</Text>
-            {(Object.keys(DIFFICULTY_LABELS) as Difficulty[]).map(option => (
+            <Text style={styles.menuTitle}>{language === 'zh' ? '选择难度' : 'Select difficulty'}</Text>
+            {(Object.keys(difficultyLabels) as Difficulty[]).map(option => (
               <TouchableOpacity
                 key={option}
                 style={[styles.difficultyOption, option === difficulty && styles.difficultyOptionActive]}
                 onPress={() => handleDifficulty(option)}
               >
                 <Text style={[styles.optionText, option === difficulty && styles.optionTextActive]}>
-                  {DIFFICULTY_LABELS[option]}
+                  {difficultyLabels[option]}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -100,7 +107,7 @@ export const GameHeader: React.FC = () => {
       <Modal transparent visible={paletteOpen} animationType="fade">
         <Pressable style={styles.modalBackdrop} onPress={() => setPaletteOpen(false)}>
           <Pressable style={styles.difficultyMenu}>
-            <Text style={styles.menuTitle}>高亮色盘</Text>
+            <Text style={styles.menuTitle}>{language === 'zh' ? '高亮色盘' : 'Highlight palette'}</Text>
             {(Object.keys(HIGHLIGHT_PALETTES) as PaletteId[]).map(option => {
               const optionPalette = HIGHLIGHT_PALETTES[option];
               return (
@@ -122,7 +129,7 @@ export const GameHeader: React.FC = () => {
                   <Text style={[styles.optionText, option === paletteId && {
                     color: optionPalette.activeText,
                     fontWeight: '700',
-                  }]}>{optionPalette.name}</Text>
+                  }]}>{PALETTE_NAMES[language][option]}</Text>
                 </TouchableOpacity>
               );
             })}
@@ -150,6 +157,8 @@ export const GameActions: React.FC = () => {
   const initialBoard = useGameStore(s => s.initialBoard);
   const saveCheckpoint = useGameStore(s => s.saveCheckpoint);
   const loadCheckpoint = useGameStore(s => s.loadCheckpoint);
+  const language = useGameStore(s => s.language);
+  const zh = language === 'zh';
 
   const canUndo = history.length > 0 && status === 'playing';
   const canErase =
@@ -161,50 +170,60 @@ export const GameActions: React.FC = () => {
     <View style={styles.actionsContainer}>
       <View style={styles.actionRow}>
         <ActionButton
-          label="存档"
+          label={zh ? '存档' : 'Save'}
           icon="⬇"
           onPress={async () => {
             const saved = await saveCheckpoint();
-            Alert.alert(saved ? '已存档' : '存档失败', saved ? '当前盘面已保存到测试存档。' : '当前没有可保存的游戏。');
+            Alert.alert(
+              saved ? (zh ? '已存档' : 'Saved') : (zh ? '存档失败' : 'Save failed'),
+              saved
+                ? (zh ? '当前盘面已保存到测试存档。' : 'The current board was saved to the test checkpoint.')
+                : (zh ? '当前没有可保存的游戏。' : 'There is no game to save.'),
+            );
           }}
           disabled={status !== 'playing'}
         />
         <ActionButton
-          label="读档"
+          label={zh ? '读档' : 'Load'}
           icon="⬆"
           onPress={async () => {
             const loaded = await loadCheckpoint();
-            Alert.alert(loaded ? '已读档' : '没有存档', loaded ? '盘面已恢复到测试存档状态。' : '请先保存一个测试存档。');
+            Alert.alert(
+              loaded ? (zh ? '已读档' : 'Loaded') : (zh ? '没有存档' : 'No checkpoint'),
+              loaded
+                ? (zh ? '盘面已恢复到测试存档状态。' : 'The board was restored from the test checkpoint.')
+                : (zh ? '请先保存一个测试存档。' : 'Save a test checkpoint first.'),
+            );
           }}
         />
         <ActionButton
-          label="撤销"
+          label={zh ? '撤销' : 'Undo'}
           icon="↩"
           onPress={undo}
           disabled={!canUndo}
         />
         <ActionButton
-          label="擦除"
+          label={zh ? '擦除' : 'Erase'}
           icon="✕"
           onPress={eraseCell}
           disabled={!canErase}
         />
         <ActionButton
-          label={candidatesEnabled ? '候选开' : '候选'}
+          label={zh ? (candidatesEnabled ? '候选开' : '候选') : (candidatesEnabled ? 'Cand. On' : 'Candidates')}
           icon="✚"
           onPress={toggleCandidates}
           disabled={status !== 'playing'}
           active={candidatesEnabled}
         />
         <ActionButton
-          label={noteMode ? '笔记' : '铅笔'}
+          label={zh ? (noteMode ? '笔记' : '铅笔') : (noteMode ? 'Notes on' : 'Notes')}
           icon="✏"
           onPress={toggleNoteMode}
           disabled={status !== 'playing'}
           active={noteMode}
         />
         <ActionButton
-          label={quickMode ? '快速开' : '快速'}
+          label={zh ? (quickMode ? '快速开' : '快速') : (quickMode ? 'Quick on' : 'Quick')}
           icon="⚡"
           onPress={toggleQuickMode}
           disabled={status !== 'playing'}

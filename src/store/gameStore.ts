@@ -67,6 +67,7 @@ export const useGameStore = create<GameState>()((set, get) => ({
   selectedNumber: null,
   difficulty: 'expert',
   paletteId: 'ocean',
+  language: 'zh',
   history: [],
 
   // ---- 操作 ----
@@ -129,21 +130,28 @@ export const useGameStore = create<GameState>()((set, get) => ({
   /** 选择难度后立即开始新游戏 */
   selectDifficulty: (difficulty) => {
     set({ difficulty });
-    const { paletteId, quickMode } = get();
-    savePreferences({ difficulty, paletteId, quickMode });
+    const { paletteId, quickMode, language } = get();
+    savePreferences({ difficulty, paletteId, quickMode, language });
     get().newGame();
   },
 
   selectPalette: (paletteId) => {
     set({ paletteId });
-    const { difficulty, quickMode } = get();
-    savePreferences({ difficulty, paletteId, quickMode });
+    const { difficulty, quickMode, language } = get();
+    savePreferences({ difficulty, paletteId, quickMode, language });
     const saved = get().getSavedGame();
     if (saved) saveGameProgress(saved);
   },
 
   applyPreferences: (preferences) => {
-    set(preferences);
+    set(state => ({ ...preferences, language: preferences.language ?? state.language }));
+  },
+
+  toggleLanguage: () => {
+    const language = get().language === 'zh' ? 'en' : 'zh';
+    set({ language });
+    const { difficulty, paletteId, quickMode } = get();
+    savePreferences({ difficulty, paletteId, quickMode, language });
   },
 
   /** 保存当前状态到独立的手动测试存档槽 */
@@ -417,8 +425,8 @@ export const useGameStore = create<GameState>()((set, get) => ({
       quickMode,
       selectedNumber: null,
     });
-    const { difficulty, paletteId } = get();
-    savePreferences({ difficulty, paletteId, quickMode });
+    const { difficulty, paletteId, language } = get();
+    savePreferences({ difficulty, paletteId, quickMode, language });
   },
 
   /** 计时器滴答 */

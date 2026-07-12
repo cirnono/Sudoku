@@ -8,10 +8,10 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.personal.sudoku"
+      "bundleIdentifier": "com.cirnono.sudoku"
     },
     "android": {
-      "package": "com.personal.sudoku"
+      "package": "com.cirnono.sudoku"
     }
   }
 }

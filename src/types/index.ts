@@ -14,11 +14,13 @@ export interface CellPosition {
 export type GameStatus = 'idle' | 'playing' | 'paused' | 'completed';
 export type Difficulty = 'easy' | 'medium' | 'hard' | 'expert' | 'master' | 'extreme';
 export type PaletteId = 'ocean' | 'forest' | 'sunset' | 'lavender' | 'rose';
+export type Language = 'zh' | 'en';
 
 export interface GamePreferences {
   difficulty: Difficulty;
   paletteId: PaletteId;
   quickMode: boolean;
+  language: Language;
 }
 
 /** 笔记模式下的候选数字记录：row-col -> Set<数字> */
@@ -57,6 +59,7 @@ export interface GameState {
   selectedNumber: CellValue | null;
   difficulty: Difficulty;
   paletteId: PaletteId;
+  language: Language;
 
   // 历史记录（用于撤销）
   history: { board: Board; notes: Notes }[];
@@ -69,6 +72,7 @@ export interface GameState {
   saveCheckpoint: () => Promise<boolean>;
   loadCheckpoint: () => Promise<boolean>;
   applyPreferences: (preferences: GamePreferences) => void;
+  toggleLanguage: () => void;
   selectCell: (pos: CellPosition | null) => void;
   pressCell: (pos: CellPosition) => void;
   selectNumber: (num: CellValue) => void;

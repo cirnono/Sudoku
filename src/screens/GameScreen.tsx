@@ -8,6 +8,7 @@ import { useGameStore } from '../store/gameStore';
 import { Board } from '../components/Board';
 import { NumberPad } from '../components/NumberPad';
 import { GameActions, GameHeader } from '../components/GameHeader';
+import { BottomBannerAd } from '../components/BottomBannerAd';
 import {
   loadGameProgress,
   saveGameProgress,
@@ -23,6 +24,7 @@ export const GameScreen: React.FC = () => {
   const tick = useGameStore(s => s.tick);
   const getSavedGame = useGameStore(s => s.getSavedGame);
   const applyPreferences = useGameStore(s => s.applyPreferences);
+  const language = useGameStore(s => s.language);
 
   // 计时器
   useEffect(() => {
@@ -82,8 +84,10 @@ export const GameScreen: React.FC = () => {
         <GameHeader />
         {status === 'paused' ? (
           <View style={styles.pausedOverlay}>
-            <Text style={styles.pausedTitle}>游戏暂停</Text>
-            <Text style={styles.pausedSub}>点击"继续"回到游戏</Text>
+            <Text style={styles.pausedTitle}>{language === 'zh' ? '游戏暂停' : 'Game paused'}</Text>
+            <Text style={styles.pausedSub}>
+              {language === 'zh' ? '点击“继续”回到游戏' : 'Tap “Resume” to return to the game'}
+            </Text>
           </View>
         ) : (
           <>
@@ -93,6 +97,7 @@ export const GameScreen: React.FC = () => {
           </>
         )}
       </View>
+      <BottomBannerAd />
     </View>
   );
 };

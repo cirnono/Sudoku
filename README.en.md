@@ -15,7 +15,8 @@ A clean Sudoku app built with Expo, React Native, and TypeScript, focused on a c
 - Undo, erase, pause, new game, replay, and timer controls
 - Automatic game progress saving
 - A per-game manual checkpoint for testing possible solutions
-- Persistent difficulty, color palette, and quick-mode preferences
+- Chinese and English interfaces with persistent language, difficulty, palette, and quick-mode preferences
+- A non-obstructive adaptive AdMob banner shown only at the bottom of the screen
 
 ## Tech Stack
 
@@ -29,14 +30,14 @@ A clean Sudoku app built with Expo, React Native, and TypeScript, focused on a c
 
 ## Getting Started
 
-Install [Node.js](https://nodejs.org/) and [pnpm](https://pnpm.io/) first. To test on a physical device, install the latest Expo Go version that supports Expo SDK 54.
+Install [Node.js](https://nodejs.org/) and [pnpm](https://pnpm.io/) first. AdMob uses native code, so this project requires an Expo Development Build and cannot run in Expo Go.
 
 ```bash
 pnpm install
-pnpm start
+pnpm exec expo run:android
 ```
 
-Scan the QR code shown in the terminal with Expo Go. You can also run:
+After the first native build, run `pnpm start` to reconnect the Development Build.
 
 ```bash
 pnpm android
@@ -45,6 +46,19 @@ pnpm web
 ```
 
 > The iOS simulator requires macOS. An Android emulator requires Android Studio setup.
+
+## AdMob Configuration
+
+Development builds use Google's test ads by default. Copy `.env.example` to `.env`, enter your AdMob App IDs and bottom banner Ad Unit IDs, and then create a production build. Never click production ads while testing.
+
+## EAS Cloud Builds
+
+```bash
+pnpm dlx eas-cli@latest login
+pnpm dlx eas-cli@latest build --platform android --profile development
+```
+
+The development profile produces an installable APK. The production profile produces an AAB for Google Play.
 
 ## How to Play
 

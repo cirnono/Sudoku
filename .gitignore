@@ -8,9 +8,8 @@ web-build/
 expo-env.d.ts
 
 # Native build output
-android/.gradle/
-android/app/build/
-ios/Pods/
+/android/
+/ios/
 *.jks
 *.keystore
 *.mobileprovision
