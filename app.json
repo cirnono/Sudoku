@@ -1,9 +1,10 @@
 {
   "expo": {
-    "name": "数独",
+    "name": "Sudoku",
     "slug": "sudoku",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
@@ -11,7 +12,11 @@
       "bundleIdentifier": "com.cirnono.sudoku"
     },
     "android": {
-      "package": "com.cirnono.sudoku"
+      "package": "com.cirnono.sudoku",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#071F62"
+      }
     }
   }
 }
