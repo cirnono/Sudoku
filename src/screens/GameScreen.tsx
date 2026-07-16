@@ -2,8 +2,8 @@
  * 游戏主页面
  */
 
-import React, { useEffect } from 'react';
-import { View, StyleSheet, StatusBar, Text } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, StyleSheet, StatusBar, Text, Alert } from 'react-native';
 import { useGameStore } from '../store/gameStore';
 import { Board } from '../components/Board';
 import { NumberPad } from '../components/NumberPad';
@@ -25,6 +25,7 @@ export const GameScreen: React.FC = () => {
   const getSavedGame = useGameStore(s => s.getSavedGame);
   const applyPreferences = useGameStore(s => s.applyPreferences);
   const language = useGameStore(s => s.language);
+  const previousStatus = useRef(status);
 
   // 计时器
   useEffect(() => {
@@ -71,11 +72,17 @@ export const GameScreen: React.FC = () => {
 
   // 游戏完成时清除存档
   useEffect(() => {
-    if (status === 'completed') {
+    if (status === 'completed' && previousStatus.current !== 'completed') {
       clearGameProgress();
       clearManualCheckpoint();
+      Alert.alert(
+        language === 'zh' ? '恭喜！' : 'Congratulations!',
+        language === 'zh' ? '你已成功完成本局数独。' : 'You completed the Sudoku puzzle!',
+        [{ text: language === 'zh' ? '确定' : 'OK' }],
+      );
     }
-  }, [status]);
+    previousStatus.current = status;
+  }, [status, language]);
 
   return (
     <View style={styles.container}>

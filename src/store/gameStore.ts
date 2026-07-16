@@ -52,6 +52,19 @@ function cloneNotes(notes: Notes): Notes {
   return result;
 }
 
+/** 从当前数字之后循环查找仍未填满的数字 */
+function findNextIncompleteNumber(board: Board, current: CellValue): CellValue | null {
+  for (let offset = 1; offset <= 9; offset++) {
+    const candidate = (((current - 1 + offset) % 9) + 1) as CellValue;
+    const count = board.reduce(
+      (total, row) => total + row.filter(value => value === candidate).length,
+      0,
+    );
+    if (count < 9) return candidate;
+  }
+  return null;
+}
+
 export const useGameStore = create<GameState>()((set, get) => ({
   // ---- 初始状态 ----
   board: [],
@@ -67,7 +80,7 @@ export const useGameStore = create<GameState>()((set, get) => ({
   selectedNumber: null,
   difficulty: 'expert',
   paletteId: 'ocean',
-  language: 'zh',
+  language: 'en',
   history: [],
 
   // ---- 操作 ----
@@ -284,7 +297,7 @@ export const useGameStore = create<GameState>()((set, get) => ({
       ) >= 9;
       const nextSelectedNumber: CellValue | null =
         quickMode && selectedNumber === num && numberIsComplete
-          ? (num === 9 ? 1 : (num + 1) as CellValue)
+          ? findNextIncompleteNumber(newBoard, num)
           : selectedNumber;
 
       set({

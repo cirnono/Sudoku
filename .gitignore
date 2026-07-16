@@ -34,3 +34,6 @@ pnpm-debug.log*
 
 # TypeScript
 *.tsbuildinfo
+
+# Local development handoff notes
+SESSION_HANDOFF.md

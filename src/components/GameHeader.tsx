@@ -3,7 +3,7 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, Pressable, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, Pressable, Alert, Linking } from 'react-native';
 import { useGameStore } from '../store/gameStore';
 import { formatTime } from '../logic/sudoku';
 import type { Difficulty, PaletteId } from '../types';
@@ -31,7 +31,7 @@ export const GameHeader: React.FC = () => {
   const [difficultyOpen, setDifficultyOpen] = useState(false);
   const paletteId = useGameStore(s => s.paletteId);
   const selectPalette = useGameStore(s => s.selectPalette);
-  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const language = useGameStore(s => s.language);
   const toggleLanguage = useGameStore(s => s.toggleLanguage);
   const difficultyLabels = DIFFICULTY_LABELS[language];
@@ -54,14 +54,11 @@ export const GameHeader: React.FC = () => {
           <Text style={styles.difficultyText}>{difficultyLabels[difficulty]} ▾</Text>
         </TouchableOpacity>
         <View style={styles.headerActions}>
-        <TouchableOpacity style={styles.headerActionBtn} onPress={toggleLanguage}>
-          <Text style={styles.headerActionText}>{language === 'zh' ? 'EN' : '中文'}</Text>
-        </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.headerActionBtn, styles.paletteBtn]}
-          onPress={() => setPaletteOpen(true)}
+          style={styles.headerActionBtn}
+          onPress={() => setSettingsOpen(true)}
         >
-          <Text style={styles.headerActionText}>{language === 'zh' ? '配色' : 'Color'}</Text>
+          <Text style={styles.headerActionText}>{language === 'zh' ? '设置' : 'Settings'}</Text>
         </TouchableOpacity>
         {status === 'paused' ? (
           <TouchableOpacity style={styles.resumeBtn} onPress={resumeGame}>
@@ -104,10 +101,26 @@ export const GameHeader: React.FC = () => {
           </Pressable>
         </Pressable>
       </Modal>
-      <Modal transparent visible={paletteOpen} animationType="fade">
-        <Pressable style={styles.modalBackdrop} onPress={() => setPaletteOpen(false)}>
+      <Modal transparent visible={settingsOpen} animationType="fade">
+        <Pressable style={styles.modalBackdrop} onPress={() => setSettingsOpen(false)}>
           <Pressable style={styles.difficultyMenu}>
-            <Text style={styles.menuTitle}>{language === 'zh' ? '高亮色盘' : 'Highlight palette'}</Text>
+            <Text style={styles.menuTitle}>{language === 'zh' ? '设置' : 'Settings'}</Text>
+            <Text style={styles.settingLabel}>{language === 'zh' ? '语言' : 'Language'}</Text>
+            <View style={styles.languageSelector}>
+              <TouchableOpacity
+                style={[styles.languageChoice, language === 'en' && styles.languageChoiceActive]}
+                onPress={() => language !== 'en' && toggleLanguage()}
+              >
+                <Text style={[styles.optionText, language === 'en' && styles.optionTextActive]}>English</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.languageChoice, language === 'zh' && styles.languageChoiceActive]}
+                onPress={() => language !== 'zh' && toggleLanguage()}
+              >
+                <Text style={[styles.optionText, language === 'zh' && styles.optionTextActive]}>中文</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.settingLabel}>{language === 'zh' ? '高亮配色' : 'Highlight palette'}</Text>
             {(Object.keys(HIGHLIGHT_PALETTES) as PaletteId[]).map(option => {
               const optionPalette = HIGHLIGHT_PALETTES[option];
               return (
@@ -118,7 +131,6 @@ export const GameHeader: React.FC = () => {
                   }]}
                   onPress={() => {
                     selectPalette(option);
-                    setPaletteOpen(false);
                   }}
                 >
                   <View style={styles.swatches}>
@@ -133,6 +145,15 @@ export const GameHeader: React.FC = () => {
                 </TouchableOpacity>
               );
             })}
+            <View style={styles.menuDivider} />
+            <TouchableOpacity
+              style={styles.privacyLink}
+              onPress={() => Linking.openURL('https://cirnono.github.io/Sudoku/privacy.html')}
+            >
+              <Text style={styles.privacyLinkText}>
+                {language === 'zh' ? '隐私政策' : 'Privacy Policy'}
+              </Text>
+            </TouchableOpacity>
           </Pressable>
         </Pressable>
       </Modal>
@@ -308,14 +329,6 @@ const styles = StyleSheet.create({
     color: '#444',
     fontWeight: '600',
   },
-  paletteBtn: {
-    minWidth: 38,
-    height: 38,
-    paddingHorizontal: 8,
-    paddingVertical: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   actionsContainer: {
     paddingHorizontal: 12,
     paddingVertical: 4,
@@ -443,5 +456,42 @@ const styles = StyleSheet.create({
     marginRight: -4,
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,0.08)',
+  },
+  menuDivider: {
+    height: 1,
+    backgroundColor: '#e5e5e5',
+    marginVertical: 8,
+  },
+  privacyLink: {
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  privacyLinkText: {
+    color: '#1565c0',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  settingLabel: {
+    fontSize: 12,
+    color: '#777',
+    fontWeight: '600',
+    marginTop: 6,
+    marginBottom: 4,
+  },
+  languageSelector: {
+    flexDirection: 'row',
+    backgroundColor: '#f5f5f5',
+    borderRadius: 10,
+    padding: 3,
+    marginBottom: 8,
+  },
+  languageChoice: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  languageChoiceActive: {
+    backgroundColor: '#e3f2fd',
   },
 });
