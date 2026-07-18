@@ -55,6 +55,9 @@ export const Cell: React.FC<CellProps> = React.memo(({ row, col, value }) => {
     selectedCell &&
     Math.floor(selectedCell.row / 3) === Math.floor(row / 3) &&
     Math.floor(selectedCell.col / 3) === Math.floor(col / 3);
+  const selectedCellHasValue = selectedCell
+    ? board[selectedCell.row][selectedCell.col] !== 0
+    : false;
 
   // 格子边框：粗边框表示宫边界
   const borderRightWidth = (col + 1) % 3 === 0 && col !== 8 ? 2 : 0.5;
@@ -77,9 +80,9 @@ export const Cell: React.FC<CellProps> = React.memo(({ row, col, value }) => {
           borderBottomWidth,
         },
         isSelected && { backgroundColor: palette.selected },
-        !isSelected && isSameRow && { backgroundColor: palette.related },
-        !isSelected && isSameCol && { backgroundColor: palette.related },
-        !isSelected && isSameBox && { backgroundColor: palette.related },
+        selectedCellHasValue && !isSelected && isSameRow && { backgroundColor: palette.related },
+        selectedCellHasValue && !isSelected && isSameCol && { backgroundColor: palette.related },
+        selectedCellHasValue && !isSelected && isSameBox && { backgroundColor: palette.related },
         isSameNumber && { backgroundColor: palette.sameNumber },
         conflict && styles.conflict,
       ]}

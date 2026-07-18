@@ -21,6 +21,7 @@ export interface GamePreferences {
   paletteId: PaletteId;
   quickMode: boolean;
   language: Language;
+  soundEnabled: boolean;
 }
 
 /** 笔记模式下的候选数字记录：row-col -> Set<数字> */
@@ -60,6 +61,7 @@ export interface GameState {
   difficulty: Difficulty;
   paletteId: PaletteId;
   language: Language;
+  soundEnabled: boolean;
 
   // 历史记录（用于撤销）
   history: { board: Board; notes: Notes }[];
@@ -73,6 +75,7 @@ export interface GameState {
   loadCheckpoint: () => Promise<boolean>;
   applyPreferences: (preferences: GamePreferences) => void;
   toggleLanguage: () => void;
+  toggleSound: () => void;
   selectCell: (pos: CellPosition | null) => void;
   pressCell: (pos: CellPosition) => void;
   selectNumber: (num: CellValue) => void;
