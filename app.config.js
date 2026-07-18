@@ -18,6 +18,13 @@ module.exports = {
   plugins: [
     ...(appJson.expo.plugins || []),
     [
+      'expo-audio',
+      {
+        microphonePermission: false,
+        recordAudioAndroid: false,
+      },
+    ],
+    [
       'react-native-google-mobile-ads',
       {
         androidAppId: validAppId(process.env.ADMOB_ANDROID_APP_ID, ANDROID_TEST_APP_ID),

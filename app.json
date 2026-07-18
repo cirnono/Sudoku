@@ -4,7 +4,7 @@
     "slug": "sudoku",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/store/play-icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
@@ -14,8 +14,8 @@
     "android": {
       "package": "com.cirnono.sudoku",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
-        "backgroundColor": "#071F62"
+        "foregroundImage": "./assets/store/play-icon.png",
+        "backgroundColor": "#FFFFFF"
       }
     }
   }

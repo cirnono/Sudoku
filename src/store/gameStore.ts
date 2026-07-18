@@ -81,6 +81,7 @@ export const useGameStore = create<GameState>()((set, get) => ({
   difficulty: 'expert',
   paletteId: 'ocean',
   language: 'en',
+  soundEnabled: true,
   history: [],
 
   // ---- 操作 ----
@@ -143,28 +144,39 @@ export const useGameStore = create<GameState>()((set, get) => ({
   /** 选择难度后立即开始新游戏 */
   selectDifficulty: (difficulty) => {
     set({ difficulty });
-    const { paletteId, quickMode, language } = get();
-    savePreferences({ difficulty, paletteId, quickMode, language });
+    const { paletteId, quickMode, language, soundEnabled } = get();
+    savePreferences({ difficulty, paletteId, quickMode, language, soundEnabled });
     get().newGame();
   },
 
   selectPalette: (paletteId) => {
     set({ paletteId });
-    const { difficulty, quickMode, language } = get();
-    savePreferences({ difficulty, paletteId, quickMode, language });
+    const { difficulty, quickMode, language, soundEnabled } = get();
+    savePreferences({ difficulty, paletteId, quickMode, language, soundEnabled });
     const saved = get().getSavedGame();
     if (saved) saveGameProgress(saved);
   },
 
   applyPreferences: (preferences) => {
-    set(state => ({ ...preferences, language: preferences.language ?? state.language }));
+    set(state => ({
+      ...preferences,
+      language: preferences.language ?? state.language,
+      soundEnabled: preferences.soundEnabled ?? state.soundEnabled,
+    }));
   },
 
   toggleLanguage: () => {
     const language = get().language === 'zh' ? 'en' : 'zh';
     set({ language });
-    const { difficulty, paletteId, quickMode } = get();
-    savePreferences({ difficulty, paletteId, quickMode, language });
+    const { difficulty, paletteId, quickMode, soundEnabled } = get();
+    savePreferences({ difficulty, paletteId, quickMode, language, soundEnabled });
+  },
+
+  toggleSound: () => {
+    const soundEnabled = !get().soundEnabled;
+    set({ soundEnabled });
+    const { difficulty, paletteId, quickMode, language } = get();
+    savePreferences({ difficulty, paletteId, quickMode, language, soundEnabled });
   },
 
   /** 保存当前状态到独立的手动测试存档槽 */
@@ -438,8 +450,8 @@ export const useGameStore = create<GameState>()((set, get) => ({
       quickMode,
       selectedNumber: null,
     });
-    const { difficulty, paletteId, language } = get();
-    savePreferences({ difficulty, paletteId, quickMode, language });
+    const { difficulty, paletteId, language, soundEnabled } = get();
+    savePreferences({ difficulty, paletteId, quickMode, language, soundEnabled });
   },
 
   /** 计时器滴答 */

@@ -34,6 +34,8 @@ export const GameHeader: React.FC = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const language = useGameStore(s => s.language);
   const toggleLanguage = useGameStore(s => s.toggleLanguage);
+  const soundEnabled = useGameStore(s => s.soundEnabled);
+  const toggleSound = useGameStore(s => s.toggleSound);
   const difficultyLabels = DIFFICULTY_LABELS[language];
 
   const handleDifficulty = (nextDifficulty: Difficulty) => {
@@ -120,6 +122,22 @@ export const GameHeader: React.FC = () => {
                 <Text style={[styles.optionText, language === 'zh' && styles.optionTextActive]}>中文</Text>
               </TouchableOpacity>
             </View>
+            <Text style={styles.settingLabel}>{language === 'zh' ? '音效' : 'Sound effects'}</Text>
+            <TouchableOpacity
+              style={styles.soundToggle}
+              onPress={toggleSound}
+              accessibilityRole="switch"
+              accessibilityState={{ checked: soundEnabled }}
+            >
+              <Text style={styles.soundToggleText}>
+                {soundEnabled
+                  ? (language === 'zh' ? '🔊 已开启' : '🔊 On')
+                  : (language === 'zh' ? '🔇 已关闭' : '🔇 Off')}
+              </Text>
+              <View style={[styles.switchTrack, soundEnabled && styles.switchTrackActive]}>
+                <View style={[styles.switchThumb, soundEnabled && styles.switchThumbActive]} />
+              </View>
+            </TouchableOpacity>
             <Text style={styles.settingLabel}>{language === 'zh' ? '高亮配色' : 'Highlight palette'}</Text>
             {(Object.keys(HIGHLIGHT_PALETTES) as PaletteId[]).map(option => {
               const optionPalette = HIGHLIGHT_PALETTES[option];
@@ -493,5 +511,39 @@ const styles = StyleSheet.create({
   },
   languageChoiceActive: {
     backgroundColor: '#e3f2fd',
+  },
+  soundToggle: {
+    minHeight: 44,
+    paddingHorizontal: 10,
+    marginBottom: 8,
+    borderRadius: 10,
+    backgroundColor: '#f5f5f5',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  soundToggleText: {
+    fontSize: 15,
+    color: '#444',
+    fontWeight: '600',
+  },
+  switchTrack: {
+    width: 42,
+    height: 24,
+    padding: 2,
+    borderRadius: 12,
+    backgroundColor: '#c7c7c7',
+  },
+  switchTrackActive: {
+    backgroundColor: '#4caf50',
+  },
+  switchThumb: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#fff',
+  },
+  switchThumbActive: {
+    transform: [{ translateX: 18 }],
   },
 });
